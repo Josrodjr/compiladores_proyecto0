@@ -2,49 +2,50 @@ grammar decaf;
 
 // PARSER RULES
 
-PROGRAM : 'class' 'Program' '{' (DECLARATION)* '}';
-DECLARATION : STRUCTDECLARATION | VARDECLARATION | METHODECLARATION;
-VARDECLARATION : VARTYPE ID ';' | VARTYPE ID '[' NUM ']' ';';
-STRUCTDECLARATION : 'struct' ID '{' (VARDECLARATION)* '}';
-VARTYPE : 'int' | 'char' | 'boolean' | 'struct' ID | STRUCTDECLARATION | 'void';
-METHODECLARATION : METHODTYPE ID '(' (PARAMETER)* ',' ')' BLOCK;
-METHODTYPE : 'int' | 'char' | 'boolean'| 'void';
-PARAMETER : PARAMETERTYPE ID | PARAMETERTYPE ID '[' ']';
-PARAMETERTYPE : 'int' | 'char' | 'boolean';
-BLOCK : '{' (VARDECLARATION)* (STATEMENT)* '}';
-STATEMENT : 'if' '(' EXPRESSION ')' BLOCK ['else' BLOCK]
-| 'while' '(' EXPRESSION ')' BLOCK
-| 'return' [EXPRESSION] ';'
-| METHODCALL ';'
-| BLOCK
-| LOCATION '=' EXPRESSION
-| [EXPRESSION] ';'
+program : 'class' 'Program' '{' (declaration)* '}';
+
+declaration : structDeclaration | varDeclaration | methoDeclaration;
+varDeclaration : varType ID ';' | varType ID '[' NUM ']' ';';
+structDeclaration : 'struct' ID '{' (varDeclaration)* '}';
+varType : 'int' | 'char' | 'boolean' | 'struct' ID | structDeclaration | 'void';
+methoDeclaration : methodType ID '(' (parameter)* ',' ')' block;
+methodType : 'int' | 'char' | 'boolean'| 'void';
+parameter : parametertype ID | parametertype ID '[' ']';
+parametertype : 'int' | 'char' | 'boolean';
+block: '{' (varDeclaration)* (statement)* '}';
+statement : 'if' '(' expression ')' block ('else' block)?
+| 'while' '(' expression ')' block
+| 'return' (expression)? ';'
+| methodCall ';'
+| block
+| location '=' expression
+| (expression)? ';'
 ;
-LOCATION : (ID | ID '[' EXPRESSION ']') [ '.' LOCATION ];
-EXPRESSION : LOCATION
-| METHODCALL
-| LITERAL
-| EXPRESSION OP EXPRESSION
-| '-' EXPRESSION
-| '!' EXPRESSION
-| '(' EXPRESSION ')'
+location : (ID | ID '[' expression ']') ('.' location)?;
+expression : location
+| methodCall
+| literal
+| expression op expression
+| '-' expression
+| '!' expression
+| '(' expression ')'
 ;
-METHODCALL : ID '(' (ARG)* ',' ')';
-ARG : EXPRESSION;
-OP : ARITH_OP | REL_OP | EQ_OP | COND_OP;
-ARITH_OP : '+' | '-' | '*' | '/' | '%';
-REL_OP : '<' | '>' | '<=' | '>=';
-EQ_OP : '==' | '!=';
-COND_OP : '&&' | '||';
-LITERAL : INT_LITERAL | CHAR_LITERAL | BOOL_LITERAL;
-INT_LITERAL : NUM;
-CHAR_LITERAL : ''' char ''';
-BOOL_LITERAL : 'true' | 'false';
+methodCall : ID '(' (arg)* ',' ')';
+arg : expression;
+op : arith_op | rel_op | eq_op | cond_op;
+arith_op : '+' | '-' | '*' | '/' | '%';
+rel_op : '<' | '>' | '<=' | '>=';
+eq_op : '==' | '!=';
+cond_op : '&&' | '||';
+literal : int_Literal | char_Literal | bool_Literal;
+int_Literal : NUM;
+char_Literal : '"' CHAR '"';
+bool_Literal : 'true' | 'false';
 
 // LEXER RULES
 
-fragment DIGIT: [0-9];
-fragment LETTER: [a..z] | [A..Z];
+DIGIT: [0-9];
+LETTER: [a-z] | [A-Z];
 
 ID: LETTER (LETTER | DIGIT)*;
 NUM: DIGIT (DIGIT)*;
