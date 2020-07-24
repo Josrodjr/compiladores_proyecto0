@@ -2,13 +2,13 @@ grammar decaf;
 
 // PARSER RULES
 
-program : 'class' 'Program' '{' (declaration)* '}';
+program : 'class' 'Program' '{' (declaration)* '}' EOF;
 
 declaration : structDeclaration | varDeclaration | methoDeclaration;
 varDeclaration : varType ID ';' | varType ID '[' NUM ']' ';';
 structDeclaration : 'struct' ID '{' (varDeclaration)* '}';
 varType : 'int' | 'char' | 'boolean' | 'struct' ID | structDeclaration | 'void';
-methoDeclaration : methodType ID '(' (parameter)* ',' ')' block;
+methoDeclaration : methodType ID '(' (parameter)* ')' block;
 methodType : 'int' | 'char' | 'boolean'| 'void';
 parameter : parametertype ID | parametertype ID '[' ']';
 parametertype : 'int' | 'char' | 'boolean';
@@ -18,7 +18,7 @@ statement : 'if' '(' expression ')' block ('else' block)?
 | 'return' (expression)? ';'
 | methodCall ';'
 | block
-| location '=' expression
+| location '=' expression ';'
 | (expression)? ';'
 ;
 location : (ID | ID '[' expression ']') ('.' location)?;
@@ -30,7 +30,7 @@ expression : location
 | '!' expression
 | '(' expression ')'
 ;
-methodCall : ID '(' (arg)* ',' ')';
+methodCall : ID '(' (arg)* ')';
 arg : expression;
 op : arith_op | rel_op | eq_op | cond_op;
 arith_op : '+' | '-' | '*' | '/' | '%';
@@ -44,8 +44,9 @@ bool_Literal : 'true' | 'false';
 
 // LEXER RULES
 
-DIGIT: [0-9];
+fragment DIGIT: [0-9];
 LETTER: [a-z] | [A-Z];
+BLANK: [ \t\r\n]+ -> skip ;
 
 ID: LETTER (LETTER | DIGIT)*;
 NUM: DIGIT (DIGIT)*;
